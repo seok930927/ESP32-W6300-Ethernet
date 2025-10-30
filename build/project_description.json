@@ -1,7 +1,7 @@
 {
     "version":            "1.2",
     "project_name":       "wizchip_TEST",
-    "project_version":    "e197055-dirty",
+    "project_version":    "7e69464-dirty",
     "project_path":       "C:/projects/ESP/hello_world",
     "idf_path":           "C:/Users/lihan/esp/v5.5.1/esp-idf",
     "build_dir":          "C:/projects/ESP/hello_world/build",
