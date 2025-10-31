@@ -60,7 +60,7 @@
     }
 
 ```
-### How to read data via SPI instance 
+### How to write data via SPI instance 
 ```c
     spi_transaction_t t;
 
