@@ -60,7 +60,19 @@
     }
 
 ```
+### How to read data via SPI instance 
+```c
+    spi_transaction_t t;
 
+    memset(&t, 0, sizeof(t));
+    
+    t.length = 8 * 8;
+    t.tx_buffer = buf;
+    t.rx_buffer = NULL;
+    t.flags = SPI_TRANS_MODE_QIO; // QUAD I/O 모드로 데이터 수신
+    ret = spi_device_transmit(spi_dev2, &t);
+
+```
 <img width="611" height="821" alt="image" src="https://github.com/user-attachments/assets/735e9567-f754-4a15-b9d4-a34d0c97e189" />
 
 
