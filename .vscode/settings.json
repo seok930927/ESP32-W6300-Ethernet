@@ -31,6 +31,13 @@
     "task.h": "c",
     "bitset": "c",
     "string_view": "c",
-    "regex": "c"
+    "regex": "c",
+    "esp_task_wdt.h": "c",
+    "array": "c",
+    "string": "c",
+    "buffer": "c",
+    "socket": "c",
+    "span": "c",
+    "spi_ll.h": "c"
   }
 }
