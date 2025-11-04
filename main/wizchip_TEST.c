@@ -21,7 +21,7 @@
 #include "W5500/w5500.h"
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
-
+#include "esp_task_wdt.h"
 #include "loopback.h"
 
 static wiz_NetInfo g_net_info = {
@@ -73,7 +73,7 @@ static uint8_t g_tcp_server_buf[ETHERNET_BUF_MAX_SIZE] = {
 };
 
 
-// static const char *TAG = "WIZCHIP_TEST"; 
+// static const char * TAG= "WIZCHIP_TEST"; 
 
 spi_device_handle_t spi_dev2;
 
@@ -106,7 +106,11 @@ void spi_init2(void)
         .mode = 0,                       // SPI mode 0
         .spics_io_num = SPI_CS_PIN,
         .queue_size = 1,
+        .address_bits = 16,
+        .command_bits = 8,
+        .dummy_bits = 2,
         .flags = SPI_DEVICE_HALFDUPLEX,  // QSPI는 일반적으로 half-duplex
+        
     };
     
     // SPI 버스 초기화 (DMA 비활성화로 시작)
@@ -133,14 +137,18 @@ void spi_init2(void)
 
 void msleep(int ms)
 {
-vTaskDelay(1000 / portTICK_PERIOD_MS);
+vTaskDelay(ms / portTICK_PERIOD_MS);
 }
 
 void app_main(void)
 {
 
+
+    esp_task_wdt_deinit(); // 전역 watchdog 해제
+
     esp_err_t ret;
     spi_transaction_t t;
+    spi_transaction_t r;
 
     msleep(1000);
     msleep(1000);
@@ -149,11 +157,8 @@ void app_main(void)
     msleep(1000);
 
     ESP_LOGI(TAG, "Starting SPI example");
-    static uint8_t buf[1024] = {0x00,};
-    for(int i=0; i<16 ; i++){
-        buf[i] = 0x01 << (i % 8) ; 
-        printf ("buf[%d] = 0x%02X\n", i, buf[i]);
-    }
+    static uint8_t buf_tx[8] = {0x12,0x48,0x12,0x48,0x12,0x48,0x12,0x48};
+    static uint8_t buf_rx[8] = {0x00,};
 
 
 
@@ -161,22 +166,31 @@ void app_main(void)
     // SPI 초기화
     // wizchip_reset();
     spi_init2();
-    memset(&t, 0, sizeof(t));
-    
-    t.length = 8 * 8;
-    t.tx_buffer = buf;
-    t.rx_buffer = NULL;
-    t.flags = SPI_TRANS_MODE_QIO; // QUAD I/O 모드로 데이터 수신
-    ret = spi_device_transmit(spi_dev2, &t);
-
-
-
-
-
-    
 while(1){
 
 
+    static uint8_t full_buffer[16];
+    memcpy(full_buffer, buf_tx, 8);  // 처음 8바이트는 송신 데이터
+    memset(full_buffer + 8, 0, 8);   // 나머지 8바이트는 0으로 초기화
+    memset(&t, 0, sizeof(t));
+    t.length = 0 ;
+    t.addr = 0x0000;
+    t.cmd = 0x80 ; 
+    t.tx_buffer = NULL ;
+    t.rx_buffer = buf_rx ;
+    t.rxlength = 8*8;
+    t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
+     ret = spi_device_transmit(spi_dev2, &t);
+    printf("RX DATA: ");
+    for(int i=0; i<8; i++){
+        printf("0x%02X ", buf_rx[i]);
+    }
+    printf("\n");
+
+
+    
+
+    msleep(1000);
 }
 
     // wizchip_gpio_init();

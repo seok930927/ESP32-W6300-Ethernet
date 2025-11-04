@@ -38,8 +38,18 @@ static const char *TAG = "SPI_EXAMPLE";
 #define SPI_D2_PIN      21   // DATA2 (WP) - 새로 추가
 #define SPI_D3_PIN      18   // DATA3 (HD) - 새로 추가
 
-#define SPI_CLK_PIN     17   // CLK
-#define SPI_CS_PIN      10   // CS
+#define SPI_CLK_PIN     10   // CLK
+#define SPI_CS_PIN      17   // CS
+
+// #define SPI_D0_PIN      37   // DATA0 (기존 MOSI)
+// #define SPI_D1_PIN      36 // DATA1 (기존 MISO)  
+// #define SPI_D2_PIN      35    // DATA2 (WP) - 새로 추가
+// #define SPI_D3_PIN      34   // DATA3 (HD) - 새로 추가
+
+// #define SPI_CLK_PIN     46   // CLK
+// #define SPI_CS_PIN      45   // CS
+
+
 
 // SPI 핀 설정
 #define SPI_MOSI_PIN    38
