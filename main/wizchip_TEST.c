@@ -75,70 +75,72 @@ static uint8_t g_tcp_server_buf[ETHERNET_BUF_MAX_SIZE] = {
 
 // static const char * TAG= "WIZCHIP_TEST"; 
 
-spi_device_handle_t spi_dev2;
 
 
-
-// SPI 초기화 함수
-void spi_init2(void)
-{
-    esp_err_t ret;
-    
-    // SPI 버스 설정
-    spi_bus_config_t buscfg = {
-        .sclk_io_num = SPI_CLK_PIN,      // CLK
-        
-        .data0_io_num = SPI_D0_PIN,      // DATA0 (MOSI와 동일)
-        .data1_io_num = SPI_D1_PIN,      // DATA1 (MISO와 동일)
-        .data2_io_num = SPI_D2_PIN,      // DATA2 (WP)
-        .data3_io_num = SPI_D3_PIN,      // DATA3 (HD)
-        .data4_io_num = -1,              // OCTAL 모드용 (사용 안함)
-        .data5_io_num = -1,              // OCTAL 모드용 (사용 안함)
-        .data6_io_num = -1,              // OCTAL 모드용 (사용 안함)
-        .data7_io_num = -1,              // OCTAL 모드용 (사용 안함)
-        .max_transfer_sz = 4096,
-        .flags = SPICOMMON_BUSFLAG_MASTER | SPICOMMON_BUSFLAG_QUAD,  // QUAD 모드 활성화
-  
-    };
-    
-    spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 10000000,      // 10MHz (QSPI는 더 빠르게 가능)
-        .mode = 0,                       // SPI mode 0
-        .spics_io_num = SPI_CS_PIN,
-        .queue_size = 1,
-        .address_bits = 16,
-        .command_bits = 8,
-        .dummy_bits = 2,
-        .flags = SPI_DEVICE_HALFDUPLEX,  // QSPI는 일반적으로 half-duplex
-        
-    };
-    
-    // SPI 버스 초기화 (DMA 비활성화로 시작)
-    ret = spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_DISABLED);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "SPI bus init failed: %s", esp_err_to_name(ret));
-        return;
-    }
-    
-    ESP_LOGI(TAG, "QSPI bus initialized successfully");
-    
-    // SPI 디바이스 추가
-    ret = spi_bus_add_device(SPI2_HOST, &devcfg, &spi_dev2);
-    if (ret != ESP_OK) {
-        ESP_LOGE(TAG, "SPI device add failed: %s", esp_err_to_name(ret));
-        return;
-    }
-
-     ESP_LOGI(TAG, "QSPI device added successfully");
-
-    
-}
 
 
 void msleep(int ms)
 {
 vTaskDelay(ms / portTICK_PERIOD_MS);
 }
+
+void qspi_write_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
+    esp_err_t ret;
+
+    static uint8_t full_buffer[16];
+    spi_transaction_t t;
+
+    memset(&t, 0, sizeof(t));
+    t.length =  len * 8 ;
+    t.addr = addr;
+    t.cmd = cmd | 0x20;
+    t.tx_buffer = data ;
+    t.rx_buffer = NULL;
+    t.rxlength = 0;
+    t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
+     ret = spi_device_transmit(spi_dev, &t);
+
+#if 0
+    printf("RX DATA: ");
+    for(int i=0; i<len; i++){
+        printf("0x%02X ", data[i]);
+    }
+    printf("\n");
+
+#endif 
+    
+
+}
+
+
+void qspi_read_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
+    esp_err_t ret;
+
+    static uint8_t full_buffer[16];
+    spi_transaction_t t;
+
+    memset(&t, 0, sizeof(t));
+    t.length = 0 ;
+    t.addr = addr;
+    t.cmd = cmd;
+    t.tx_buffer = NULL ;
+    t.rx_buffer = data ;
+    t.rxlength = len * 8;
+    t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
+     ret = spi_device_transmit(spi_dev, &t);
+
+#if 0
+    printf("RX DATA: ");
+    for(int i=0; i<len; i++){
+        printf("0x%02X ", data[i]);
+    }
+    printf("\n");
+
+#endif 
+    
+
+}
+
 
 void app_main(void)
 {
@@ -165,10 +167,10 @@ void app_main(void)
 
     // SPI 초기화
     // wizchip_reset();
-    spi_init2();
-while(1){
+    spi_init_qspi();
 
 
+    
     static uint8_t full_buffer[16];
     memcpy(full_buffer, buf_tx, 8);  // 처음 8바이트는 송신 데이터
     memset(full_buffer + 8, 0, 8);   // 나머지 8바이트는 0으로 초기화
@@ -180,7 +182,7 @@ while(1){
     t.rx_buffer = buf_rx ;
     t.rxlength = 8*8;
     t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
-     ret = spi_device_transmit(spi_dev2, &t);
+     ret = spi_device_transmit(spi_dev, &t);
     printf("RX DATA: ");
     for(int i=0; i<8; i++){
         printf("0x%02X ", buf_rx[i]);
@@ -190,6 +192,42 @@ while(1){
 
     
 
+while(1){
+    uint8_t buf_rx[8] = {0x00,};
+    uint8_t buf_IP[8] = {192, 168, 11, 99};
+    uint8_t buf_GUAR[16] = {192, 168, 11, 99,
+        192, 168, 11, 99,
+        192, 168, 11, 99,
+        192, 168, 11, 99};
+    uint8_t buf_rx_16[16] = {0x00,};
+        
+    qspi_read_data(0x80, 0x0000, buf_rx, 1);
+    printf("Read from address 0x0000: 0x%02x \n", buf_rx[0] );
+    qspi_read_data(0x80, 0x0001, buf_rx, 1);
+    printf("Read from address 0x0001: 0x%02x \n", buf_rx[0] );
+    qspi_read_data(0x80, 0x0002, buf_rx, 1);
+    printf("Read from address 0x0002: 0x%02x \n", buf_rx[0] );
+    qspi_read_data(0x80, 0x0003, buf_rx, 1);
+    printf("Read from address 0x0003: 0x%02x \n", buf_rx[0] );
+
+
+
+    
+    qspi_read_data(0x80, 0x4138, buf_rx, 4);
+    printf(" IP = : [%d.%d.%d.%d] \n", buf_rx[0], buf_rx[1], buf_rx[2], buf_rx[3] );
+
+    qspi_write_data(0x80, 0x4138, buf_IP, 4);
+
+    qspi_read_data(0x80, 0x4138, buf_rx, 4);
+    printf(" IP = : [%d.%d.%d.%d] \n", buf_rx[0], buf_rx[1], buf_rx[2], buf_rx[3] );
+
+   qspi_write_data(0x80, 0x4150, buf_GUAR,  16);
+
+    qspi_read_data(0x80, 0x4150, buf_rx_16, 16 );
+    printf(" IP = : [%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d] \n", buf_rx_16[0], buf_rx_16[1], buf_rx_16[2], buf_rx_16[3],
+                                 buf_rx_16[4], buf_rx_16[5], buf_rx_16[6], buf_rx_16[7],
+                                 buf_rx_16[8], buf_rx_16[9], buf_rx_16[10], buf_rx_16[11],
+                                 buf_rx_16[12], buf_rx_16[13], buf_rx_16[14], buf_rx_16[15] );
     msleep(1000);
 }
 

@@ -62,6 +62,7 @@ extern spi_device_handle_t spi_dev;
 
 // SPI 초기화 함수
 void spi_init(void);
+void spi_init_qspi(void);
 
 // SPI 데이터 전송 함수
 void spi_send_data( uint8_t *data, size_t len) ;
