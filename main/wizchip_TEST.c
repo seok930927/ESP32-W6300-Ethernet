@@ -84,63 +84,6 @@ void msleep(int ms)
 vTaskDelay(ms / portTICK_PERIOD_MS);
 }
 
-void qspi_write_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
-    esp_err_t ret;
-
-    static uint8_t full_buffer[16];
-    spi_transaction_t t;
-
-    memset(&t, 0, sizeof(t));
-    t.length =  len * 8 ;
-    t.addr = addr;
-    t.cmd = cmd | 0x20;
-    t.tx_buffer = data ;
-    t.rx_buffer = NULL;
-    t.rxlength = 0;
-    t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
-     ret = spi_device_transmit(spi_dev, &t);
-
-#if 0
-    printf("RX DATA: ");
-    for(int i=0; i<len; i++){
-        printf("0x%02X ", data[i]);
-    }
-    printf("\n");
-
-#endif 
-    
-
-}
-
-
-void qspi_read_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
-    esp_err_t ret;
-
-    static uint8_t full_buffer[16];
-    spi_transaction_t t;
-
-    memset(&t, 0, sizeof(t));
-    t.length = 0 ;
-    t.addr = addr;
-    t.cmd = cmd;
-    t.tx_buffer = NULL ;
-    t.rx_buffer = data ;
-    t.rxlength = len * 8;
-    t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
-     ret = spi_device_transmit(spi_dev, &t);
-
-#if 0
-    printf("RX DATA: ");
-    for(int i=0; i<len; i++){
-        printf("0x%02X ", data[i]);
-    }
-    printf("\n");
-
-#endif 
-    
-
-}
-
 
 void app_main(void)
 {
@@ -169,25 +112,6 @@ void app_main(void)
     // wizchip_reset();
     spi_init_qspi();
 
-
-    
-    static uint8_t full_buffer[16];
-    memcpy(full_buffer, buf_tx, 8);  // 처음 8바이트는 송신 데이터
-    memset(full_buffer + 8, 0, 8);   // 나머지 8바이트는 0으로 초기화
-    memset(&t, 0, sizeof(t));
-    t.length = 0 ;
-    t.addr = 0x0000;
-    t.cmd = 0x80 ; 
-    t.tx_buffer = NULL ;
-    t.rx_buffer = buf_rx ;
-    t.rxlength = 8*8;
-    t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
-     ret = spi_device_transmit(spi_dev, &t);
-    printf("RX DATA: ");
-    for(int i=0; i<8; i++){
-        printf("0x%02X ", buf_rx[i]);
-    }
-    printf("\n");
 
 
     
