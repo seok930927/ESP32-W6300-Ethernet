@@ -76,3 +76,16 @@
 <img width="611" height="821" alt="image" src="https://github.com/user-attachments/assets/735e9567-f754-4a15-b9d4-a34d0c97e189" />
 
 
+### setup  Network info
+
+<img width="315" height="423" alt="image" src="https://github.com/user-attachments/assets/3fbc7269-d391-41b6-99ef-f55dc420c126" />
+
+
+
+### loopback TEST (qspi CLK - 50Mhz)
+
+<img width="319" height="201" alt="image" src="https://github.com/user-attachments/assets/8d2f05c9-7ad0-4593-9ffe-725ef8428f54" />
+
+
+
+
