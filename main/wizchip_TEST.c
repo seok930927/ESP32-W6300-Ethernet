@@ -19,6 +19,7 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "W5500/w5500.h"
+#include "W6300/w6300.h"
 #include "wizchip_conf.h"
 #include "wizchip_spi.h"
 #include "esp_task_wdt.h"
@@ -67,7 +68,7 @@ static wiz_NetInfo g_net_info = {
 #endif
 };
 
-#define ETHERNET_BUF_MAX_SIZE (1024 * 2)
+#define ETHERNET_BUF_MAX_SIZE (1024 * 4)
 static uint8_t g_tcp_server_buf[ETHERNET_BUF_MAX_SIZE] = {
     0,
 };
@@ -102,57 +103,27 @@ void app_main(void)
     msleep(1000);
 
     ESP_LOGI(TAG, "Starting SPI example");
-    static uint8_t buf_tx[8] = {0x12,0x48,0x12,0x48,0x12,0x48,0x12,0x48};
-    static uint8_t buf_rx[8] = {0x00,};
-
-
-
-
-    // SPI 초기화
-    // wizchip_reset();
+    wizchip_reset();
     spi_init_qspi();
 
-
-
-    
+    wizchip_initialize();
+    network_initialize(g_net_info);
+    print_network_information(g_net_info);
+   int retval = 0;
 
 while(1){
-    uint8_t buf_rx[8] = {0x00,};
-    uint8_t buf_IP[8] = {192, 168, 11, 99};
-    uint8_t buf_GUAR[16] = {192, 168, 11, 99,
-        192, 168, 11, 99,
-        192, 168, 11, 99,
-        192, 168, 11, 99};
-    uint8_t buf_rx_16[16] = {0x00,};
-        
-    qspi_read_data(0x80, 0x0000, buf_rx, 1);
-    printf("Read from address 0x0000: 0x%02x \n", buf_rx[0] );
-    qspi_read_data(0x80, 0x0001, buf_rx, 1);
-    printf("Read from address 0x0001: 0x%02x \n", buf_rx[0] );
-    qspi_read_data(0x80, 0x0002, buf_rx, 1);
-    printf("Read from address 0x0002: 0x%02x \n", buf_rx[0] );
-    qspi_read_data(0x80, 0x0003, buf_rx, 1);
-    printf("Read from address 0x0003: 0x%02x \n", buf_rx[0] );
+  
+        if ((retval = loopback_tcps(0, g_tcp_server_buf, 5000)) < 0) {
+            printf(" loopback_tcps error : %d\n", retval);
 
-
-
-    
-    qspi_read_data(0x80, 0x4138, buf_rx, 4);
-    printf(" IP = : [%d.%d.%d.%d] \n", buf_rx[0], buf_rx[1], buf_rx[2], buf_rx[3] );
-
-    qspi_write_data(0x80, 0x4138, buf_IP, 4);
-
-    qspi_read_data(0x80, 0x4138, buf_rx, 4);
-    printf(" IP = : [%d.%d.%d.%d] \n", buf_rx[0], buf_rx[1], buf_rx[2], buf_rx[3] );
-
-   qspi_write_data(0x80, 0x4150, buf_GUAR,  16);
-
-    qspi_read_data(0x80, 0x4150, buf_rx_16, 16 );
-    printf(" IP = : [%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d.%d] \n", buf_rx_16[0], buf_rx_16[1], buf_rx_16[2], buf_rx_16[3],
-                                 buf_rx_16[4], buf_rx_16[5], buf_rx_16[6], buf_rx_16[7],
-                                 buf_rx_16[8], buf_rx_16[9], buf_rx_16[10], buf_rx_16[11],
-                                 buf_rx_16[12], buf_rx_16[13], buf_rx_16[14], buf_rx_16[15] );
-    msleep(1000);
+            while (1)
+                ;
+        }
+    // printf("CHip_id = %d \n", getCIDR());
+    // printf("CHip_id = %d \n", getCIDR());
+    // printf("CHip_id = %d \n", getCIDR());
+    // printf("CHip_id = %d \n", getCIDR());
+    // printf("CHip_id = %d \n", getCIDR());
 }
 
     // wizchip_gpio_init();

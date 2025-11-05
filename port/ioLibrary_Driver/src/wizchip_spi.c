@@ -110,7 +110,7 @@ void spi_init_qspi(void)
     };
     
     spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 40000000,      // 10MHz (QSPI는 더 빠르게 가능)
+        .clock_speed_hz = 50000000,      // 10MHz (QSPI는 더 빠르게 가능)
         .mode = 0,                       // SPI mode 0
         .spics_io_num = SPI_CS_PIN,
         .queue_size = 1,
@@ -122,7 +122,7 @@ void spi_init_qspi(void)
     };
     
     // SPI 버스 초기화 (DMA 비활성화로 시작)
-    ret = spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_DISABLED);
+    ret = spi_bus_initialize(SPI2_HOST, &buscfg, SPI_DMA_CH_AUTO);
     if (ret != ESP_OK) {
         ESP_LOGE(TAG, "SPI bus init failed: %s", esp_err_to_name(ret));
         return;
@@ -340,7 +340,7 @@ void wizchip_hw_reset(void)
     
     // RST 핀을 HIGH로 설정 (리셋 해제)
     gpio_set_level(SPI_RST_PIN, 0);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(10000));
 
     gpio_set_level(SPI_RST_PIN, 1);
 

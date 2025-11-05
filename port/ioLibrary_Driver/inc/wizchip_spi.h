@@ -200,6 +200,8 @@ void wizchip_cris_initialize(void);
 
     \param none
 */
+void wizchip_hw_reset(void);
+
 void wizchip_reset(void);
 
 /*! \brief Initialize WIZchip

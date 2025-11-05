@@ -38,6 +38,7 @@
     "buffer": "c",
     "socket": "c",
     "span": "c",
-    "spi_ll.h": "c"
+    "spi_ll.h": "c",
+    "string.h": "c"
   }
 }
