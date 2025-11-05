@@ -4,6 +4,8 @@ idf_component_register(SRCS "wizchip_TEST.c"
                             "../lib/ioLibrary_Driver/Ethernet/socket.c"
                             "../lib/ioLibrary_Driver/Ethernet/W5500/w5500.c"
                             "../lib/ioLibrary_Driver/Ethernet/W6300/w6300.c"
+                            "../lib/iperf/iperf.c"
+                            "../lib/iperf/cJSON.c"
                             "../lib/ioLibrary_Driver/Application/loopback/loopback.c"
                        PRIV_REQUIRES spi_flash driver esp_timer
                     #    INCLUDE_DIRS "")
@@ -15,4 +17,6 @@ idf_component_register(SRCS "wizchip_TEST.c"
                                     "../lib/ioLibrary_Driver/Application"
                                     "../lib/ioLibrary_Driver/Application/loopback"
                                     "../port/ioLibrary_Driver/inc"
+                                    "../lib/iperf"
+
                                     )

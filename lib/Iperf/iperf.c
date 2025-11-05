@@ -3,11 +3,30 @@
 #include <stdbool.h>
 #include <string.h>
 #include <time.h>
-#include "hardware/timer.h"
 #include "iperf.h"
 
-uint32_t get_time_us() {
-    return (uint32_t)time_us_64();
+// 함수 포인터 선언 (정적 변수로 안전하게 관리)
+static uint32_t (*get_time_us_ptr)(void) = NULL;
+
+// 라이브러리 초기화 함수 - 외부에서 시간 함수를 등록
+int iperf_init(uint32_t (*time_func)(void)) {
+    if (time_func == NULL) {
+        printf("Error: time function pointer is NULL\n");
+        return -1;
+    }
+    
+    get_time_us_ptr = time_func;
+    printf("iPerf library initialized with custom timer function\n");
+    return 0;
+}
+
+// 내부에서 사용할 시간 함수 (함수 포인터 래퍼)
+static uint32_t get_time_us(void) {
+    if (get_time_us_ptr == NULL) {
+        printf("Error: Timer function not initialized! Call iperf_init() first\n");
+        return 0;
+    }
+    return get_time_us_ptr();
 }
 
 void iperf_stats_init(Stats *stats, uint32_t pacing_timer_ms) {
@@ -63,7 +82,7 @@ void iperf_stats_stop(Stats *stats) {
     double transfer_mbits = (stats->nb0 * 8) / 1e6 / total_time_s;
 
     printf("------------------------------------------------------------\n");
-    printf("Total: %5.2f sec %8u Bytes  %5.2f Mbits/sec\n",
+    printf("Total: %5.2f sec %8lu Bytes  %5.2f Mbits/sec\n",
            total_time_s, stats->nb0, transfer_mbits);
 }
 

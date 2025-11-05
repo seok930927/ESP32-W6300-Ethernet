@@ -16,6 +16,9 @@ typedef struct {
     uint32_t np1;              // Number of packets per interval
 } Stats;
 
+int iperf_init(uint32_t (*time_func)(void));
+
+
 void iperf_stats_init(Stats *stats, uint32_t pacing_timer_ms);
 void iperf_stats_start(Stats *stats);
 void iperf_stats_update(Stats *stats, bool final);

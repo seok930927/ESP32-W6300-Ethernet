@@ -24,6 +24,9 @@
 #include "wizchip_spi.h"
 #include "esp_task_wdt.h"
 #include "loopback.h"
+#include "iperf.h"
+#include "cJSON.h"
+
 
 static wiz_NetInfo g_net_info = {
     .mac = {0x00, 0x08, 0xDC, 0x12, 0x34, 0x56}, // MAC address
@@ -77,8 +80,9 @@ static uint8_t g_tcp_server_buf[ETHERNET_BUF_MAX_SIZE] = {
 // static const char * TAG= "WIZCHIP_TEST"; 
 
 
-
-
+static uint32_t get_time_us_ptr(void){
+    return (uint32_t)(esp_timer_get_time() & 0xFFFFFFFF);
+}
 
 void msleep(int ms)
 {
@@ -91,6 +95,10 @@ void app_main(void)
 
 
     esp_task_wdt_deinit(); // 전역 watchdog 해제
+
+    // Setup iperf library timer callbacks
+    iperf_init(get_time_us_ptr);
+    ESP_LOGI(TAG, "Iperf library timer callbacks initialized");
 
     esp_err_t ret;
     spi_transaction_t t;
