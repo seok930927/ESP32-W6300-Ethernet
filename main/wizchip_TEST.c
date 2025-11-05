@@ -105,8 +105,10 @@ void app_main(void)
     ESP_LOGI(TAG, "Starting SPI example");
     wizchip_reset();
     spi_init_qspi();
+    printf("CHip_id = %d \n", getCIDR());
 
     wizchip_initialize();
+
     network_initialize(g_net_info);
     print_network_information(g_net_info);
    int retval = 0;
@@ -119,12 +121,6 @@ while(1){
             while (1)
                 ;
         }
-    // printf("CHip_id = %d \n", getCIDR());
-    // printf("CHip_id = %d \n", getCIDR());
-    // printf("CHip_id = %d \n", getCIDR());
-    // printf("CHip_id = %d \n", getCIDR());
-    // printf("CHip_id = %d \n", getCIDR());
 }
 
-    // wizchip_gpio_init();
 }
