@@ -110,7 +110,7 @@ void spi_init_qspi(void)
     };
     
     spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 50000000,      // 10MHz (QSPI는 더 빠르게 가능)
+        .clock_speed_hz = 50 *1000*1000,      // 10MHz (QSPI는 더 빠르게 가능)
         .mode = 0,                       // SPI mode 0
         .spics_io_num = SPI_CS_PIN,
         .queue_size = 1,
@@ -217,7 +217,7 @@ void qspi_write_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
     t.rx_buffer = NULL;
     t.rxlength = 0;
     t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
-     ret = spi_device_transmit(spi_dev, &t);
+     ret = spi_device_polling_transmit(spi_dev, &t);
 
 #if 0
     printf("RX DATA: ");
@@ -246,7 +246,7 @@ void qspi_read_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
     t.rx_buffer = data ;
     t.rxlength = len * 8;
     t.flags = SPI_TRANS_MODE_QIO  | SPI_TRANS_MULTILINE_ADDR    ;// QUAD I/O 모드로 데이터 수신
-     ret = spi_device_transmit(spi_dev, &t);
+     ret = spi_device_polling_transmit(spi_dev, &t);
 
 #if 0
     printf("RX DATA: ");
@@ -340,7 +340,7 @@ void wizchip_hw_reset(void)
     
     // RST 핀을 HIGH로 설정 (리셋 해제)
     gpio_set_level(SPI_RST_PIN, 0);
-    vTaskDelay(pdMS_TO_TICKS(10000));
+    vTaskDelay(pdMS_TO_TICKS(1000));
 
     gpio_set_level(SPI_RST_PIN, 1);
 
@@ -388,7 +388,7 @@ void wizchip_initialize(void) {
 #elif (_WIZCHIP_ == W6100)
     uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 #elif (_WIZCHIP_ == W6300)
-    uint8_t memsize[2][8] = {{4, 4, 4, 4, 4, 4, 4, 4}, {4, 4, 4, 4, 4, 4, 4, 4}};
+    uint8_t memsize[2][8] = {{16, 16, 0,0, 0,0,0,0}, {16, 16, 0,0, 0,0,0,0} };
 #endif
 
     if (ctlwizchip(CW_INIT_WIZCHIP, (void *)memsize) == -1) {
