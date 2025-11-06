@@ -39,6 +39,12 @@
     "socket": "c",
     "span": "c",
     "spi_ll.h": "c",
-    "string.h": "c"
+    "string.h": "c",
+    "spi_periph.h": "c",
+    "periph_ctrl.h": "c",
+    "sdkconfig.h": "c",
+    "gpio_sig_map.h": "c",
+    "_default_types.h": "c",
+    "io_mux.h": "c"
   }
 }

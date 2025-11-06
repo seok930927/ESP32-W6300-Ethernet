@@ -70,7 +70,7 @@ void spi_send_data( uint8_t *data, size_t len) ;
 
 // SPI 명령어/주소 전송 후 데이터 수신 함수 (정적 버퍼 버전)
 void spi_receive_data(uint8_t *data,uint8_t *recv_data , size_t cmd_size , size_t len);
-
+void qspi_read_data_fast(uint8_t cmd, uint32_t addr, uint8_t *data, size_t len);
 void qspi_write_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len);
 void qspi_read_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len);
 /* Use SPI DMA */

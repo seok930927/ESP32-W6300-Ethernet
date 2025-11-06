@@ -110,7 +110,7 @@ void spi_init_qspi(void)
     };
     
     spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 50 *1000*1000,      // 10MHz (QSPI는 더 빠르게 가능)
+        .clock_speed_hz = 1 *1000*1000,      // 10MHz (QSPI는 더 빠르게 가능)
         .mode = 0,                       // SPI mode 0
         .spics_io_num = SPI_CS_PIN,
         .queue_size = 1,

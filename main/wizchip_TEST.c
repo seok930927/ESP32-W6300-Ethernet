@@ -155,11 +155,6 @@ void app_main(void)
     spi_transaction_t t;
     spi_transaction_t r;
 
-    msleep(1000);
-    msleep(1000);
-    msleep(1000);
-    msleep(1000);
-    msleep(1000);
 
     ESP_LOGI(TAG, "Starting SPI example");
     wizchip_reset();
@@ -297,7 +292,13 @@ void handle_create_streams(bool udp, uint8_t *dest_ip, uint16_t destport) {
     }
 #endif
 }
+int32_t recv_iperf(uint8_t sn, uint8_t * buf, uint16_t len) {
+    wiz_recv_data(sn, buf, len);
+    setSn_CR(sn, Sn_CR_RECV);
+    while (getSn_CR(sn));
 
+    return (int32_t)len;
+}
 void start_iperf_test(Stats *stats, bool reverse, bool udp, uint8_t *dest_ip, uint16_t destport) {
     uint8_t cmd = 0;
     uint32_t pack_len = 0;
@@ -316,7 +317,7 @@ void start_iperf_test(Stats *stats, bool reverse, bool udp, uint8_t *dest_ip, ui
 
     while (stats->running) {
         if (getSn_RX_RSR(SOCKET_CTRL) > 0) {
-            recv(SOCKET_CTRL, &cmd, 1);
+            recv_iperf(SOCKET_CTRL, &cmd, 1);
             if (cmd == TEST_END) {
                 stats->running = false;
                 break;
@@ -337,7 +338,7 @@ void start_iperf_test(Stats *stats, bool reverse, bool udp, uint8_t *dest_ip, ui
                 if (udp) {
                     recv_bytes = recvfrom(SOCKET_DATA, (uint8_t *)g_iperf_buf, ETHERNET_BUF_MAX_SIZE / 2 - 1, dest_ip, (uint16_t*)&destport);
                 } else {
-                    recv_bytes = recv(SOCKET_DATA, (uint8_t *)g_iperf_buf, ETHERNET_BUF_MAX_SIZE / 2  - 1);
+                    recv_bytes = recv_iperf(SOCKET_DATA, (uint8_t *)g_iperf_buf, ETHERNET_BUF_MAX_SIZE / 2  - 1);
                 }
 
                 iperf_stats_add_bytes(stats, recv_bytes);
