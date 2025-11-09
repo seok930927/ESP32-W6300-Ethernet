@@ -45,6 +45,7 @@
     "sdkconfig.h": "c",
     "gpio_sig_map.h": "c",
     "_default_types.h": "c",
-    "io_mux.h": "c"
+    "io_mux.h": "c",
+    "w5300.h": "c"
   }
 }

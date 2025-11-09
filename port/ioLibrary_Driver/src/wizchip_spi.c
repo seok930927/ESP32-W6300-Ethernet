@@ -72,7 +72,7 @@ void spi_init(void)
     
     // SPI 디바이스 설정
     spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 1000000,  // 1MHz
+        .clock_speed_hz = 40000000,  // 4MHz
         .mode = 0,                  // SPI mode 0
         .spics_io_num = SPI_CS_PIN,
         .queue_size = 7,

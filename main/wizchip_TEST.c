@@ -158,14 +158,22 @@ void app_main(void)
 
     ESP_LOGI(TAG, "Starting SPI example");
     wizchip_reset();
-    spi_init_qspi();
-    printf("CHip_id = 0x%04x \n", getCIDR());
+    //spi_init_qspi();
+    spi_init(); 
 
+    uint8_t spi_data[4] = {0,0x39 ,0x00,0x00};
+    uint8_t recv_Data[4] = {0,0 ,0x00,0x00};
+  
+    msleep(1000);
+//   while(1 ) {
+//     spi_receive_data(spi_data, recv_Data,  3, 1);
+//     printf ("recv_Data: 0x%02X\n", recv_Data[0]);
+//     msleep(100);
+//     }
     wizchip_initialize();
 
     network_initialize(g_net_info);
     print_network_information(g_net_info);
-    printf("CHip_id = net work initialized\n");
 
    int retval = 0;
 

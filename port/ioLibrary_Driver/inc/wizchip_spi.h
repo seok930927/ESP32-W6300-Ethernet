@@ -21,14 +21,7 @@ static const char *TAG = "SPI_EXAMPLE";
 
 /* SPI */
 #define SPI_PORT spi0
-#define SPI_CLK  10
 
-#define PIN_SCK 18
-#define PIN_MOSI 19
-#define PIN_MISO 16
-#define PIN_CS 17
-#define PIN_RST 20
-#define PIN_INT 21
 
 
 // QSPI 핀 설정 (기존 SPI 핀을 QSPI로 확장)
@@ -38,8 +31,8 @@ static const char *TAG = "SPI_EXAMPLE";
 #define SPI_D2_PIN      21   // DATA2 (WP) - 새로 추가
 #define SPI_D3_PIN      18   // DATA3 (HD) - 새로 추가
 
-#define SPI_CLK_PIN     10   // CLK
-#define SPI_CS_PIN      17   // CS
+#define SPI_CLK_PIN     21   // CLK
+#define SPI_CS_PIN      18   // CS
 
 // #define SPI_D0_PIN      37   // DATA0 (기존 MOSI)
 // #define SPI_D1_PIN      36 // DATA1 (기존 MISO)  
@@ -52,11 +45,11 @@ static const char *TAG = "SPI_EXAMPLE";
 
 
 // SPI 핀 설정
-#define SPI_MOSI_PIN    38
-#define SPI_MISO_PIN    47
+#define SPI_MOSI_PIN    47
+#define SPI_MISO_PIN    38
 
-#define SPI_RST_PIN     5
-#define SPI_PIN_INT     21
+#define SPI_RST_PIN     17
+#define SPI_PIN_INT     10
 
 extern spi_device_handle_t spi_dev;
 
