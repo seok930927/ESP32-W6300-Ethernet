@@ -67,12 +67,12 @@ void spi_init(void)
         .sclk_io_num = SPI_CLK_PIN,
         .quadwp_io_num = -1,
         .quadhd_io_num = -1,
-        .max_transfer_sz = 4096,
+        .max_transfer_sz = 16* 1024,
     };
     
     // SPI 디바이스 설정
     spi_device_interface_config_t devcfg = {
-        .clock_speed_hz = 40000000,  // 4MHz
+        .clock_speed_hz =  50000000,  // 4MHz
         .mode = 0,                  // SPI mode 0
         .spics_io_num = SPI_CS_PIN,
         .queue_size = 7,
@@ -384,7 +384,7 @@ void wizchip_initialize(void) {
 #if (_WIZCHIP_ == W5100S)
     uint8_t memsize[2][4] = {{2, 2, 2, 2}, {2, 2, 2, 2}};
 #elif (_WIZCHIP_ == W5500)
-    uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
+    uint8_t memsize[2][8] = {{16, 0,0,0 ,0,0,0,0}, {16, 0,0,0 ,0,0,0,0}};
 #elif (_WIZCHIP_ == W6100)
     uint8_t memsize[2][8] = {{2, 2, 2, 2, 2, 2, 2, 2}, {2, 2, 2, 2, 2, 2, 2, 2}};
 #elif (_WIZCHIP_ == W6300)
