@@ -117,6 +117,7 @@ void qspi_read_data(uint8_t cmd , uint16_t addr, uint8_t *data, size_t len){
 ### read address 0x0000
 
 <img width="944" height="587" alt="image" src="https://github.com/user-attachments/assets/3ff8c995-c385-4704-aabd-db735226cb9b" />
+<img width="842" height="663" alt="image" src="https://github.com/user-attachments/assets/52266d3d-40de-48cd-82dd-8a4bdb61f223" />
 
 ### setup  Network info
 
